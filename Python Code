@@ -1,0 +1,66 @@
+import requests
+import os
+import webbrowser
+
+
+
+def findBack(code, triggerSpot, triggerWord):
+    goingBack = triggerSpot
+    
+    while True:
+        if (code[goingBack] == ">") or (code[goingBack] == "<"):
+            return (goingBack)
+        elif (code[goingBack] == "."):
+            return (goingBack)
+        goingBack -= 1
+
+
+def findFront(code, triggerSpot, triggerWord):
+    goingForward = triggerSpot + len(triggerWord)
+    
+    while True:
+        if (code[goingForward] == ">") or (code[goingForward] == "<"):
+            return (goingForward)
+        elif (code[goingForward] == "."):
+            return (goingForward)
+        goingForward += 1
+
+
+def removeWord(code,triggers):
+    while True:
+        triggerLocate = code.find(triggers[-1])
+        L = []
+        if triggerLocate != -1:
+            back = (findBack(code, triggerLocate, triggers[-1]))
+            front = (findFront(code, triggerLocate, triggers[-1]))
+            code = code[:back] + code[front:]
+
+        else:
+            return code
+
+
+def searchWebsite(websiteUrl):
+    r = requests.get(websiteUrl)
+    code = r.text
+    code = code.replace("sexually abusing her"," ")
+    triggers = ["abuse", "suicid", "shoot", "kill", 'rape', 'assault', 'cut','strangulation',]
+    while len(triggers) > 0:
+        code = removeWord(code,triggers)
+        
+        triggers.pop()
+        
+    return code
+       
+
+
+url = ('https://www.thestar.com/news/gta/2019/01/09/oakville-psychiatrist-stripped-of-licence-for-sexually-abusing-her-patient.html')
+newCode = (searchWebsite(url))
+
+path = os.path.abspath('temp.html')
+url = 'file://' + path
+
+with open(path, 'w') as f:
+    f.write(newCode)
+webbrowser.open(url)
+
+
